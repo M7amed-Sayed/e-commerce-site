@@ -18,8 +18,9 @@ const App = () => {
   return (
     <Provider store={store}>
       <Router>
-        <div>
+        <div style={styles.pageContainer}>
           <Navbar />
+          <main style={styles.contentWrap}>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/about" element={<AboutPage />} />
@@ -29,11 +30,25 @@ const App = () => {
             <Route path="/login" element={<SignupLoginPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
+          </main>
           <Footer />
         </div>
       </Router>
     </Provider>
   );
 };
+const styles = {
+  pageContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: '100vh', // Ensure the container covers at least the height of the viewport
+  },
+  contentWrap: {
+    flex: 1, // This makes the content area grow to fill the available space
+  },
+};
 
 export default App;
+
+
+

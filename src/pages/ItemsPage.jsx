@@ -19,8 +19,9 @@ const ItemsPage = () => {
 
   return (
     <div>
-      <h1>Items</h1>
+      <h1 style={styles.h1}>Items</h1>
       {/* Container for the items with a flexbox layout */}
+      
       <div style={styles.itemsContainer}>
         {items.map((item) => (
           <ItemCard key={item.id} item={item} addToCart={handleAddToCart} />
@@ -40,6 +41,12 @@ const styles = {
     gap: '16px', // Add some spacing between items
     margin: '20px 0', // Add margin at the top and bottom
   },
+
+  image: {
+    maxWidth: '100%',
+    borderRadius: '8px',
+  },
+ 
 };
 
 export default ItemsPage;

@@ -1,7 +1,7 @@
 // src/pages/CartPage.js
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { removeFromCart } from '../redux/actions/itemActions'; // Import remove action
+import { updateCartQuantity } from '../redux/actions/itemActions'; // Import update action
 import { useNavigate } from 'react-router-dom'; // Import useNavigate to navigate
 
 const CartPage = () => {
@@ -14,9 +14,15 @@ const CartPage = () => {
     return cart.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
-  // Function to handle item removal from the cart
-  const handleRemoveFromCart = (id) => {
-    dispatch(removeFromCart(id)); // Dispatch remove action
+  // Function to handle item quantity change
+  const handleQuantityChange = (id, delta) => {
+    const item = cart.find((cartItem) => cartItem.id === id);
+    const newQuantity = item.quantity + delta;
+
+    // Update quantity only if it's greater than 0
+    if (newQuantity >= 0) {
+      dispatch(updateCartQuantity(id, newQuantity));
+    }
   };
 
   // Function to handle checkout button click
@@ -34,9 +40,13 @@ const CartPage = () => {
           {cart.map((item) => (
             <div key={item.id} className="cart-item">
               <h2>{item.name}</h2>
-              <p>Price: ${item.price} x {item.quantity}</p>
+              <p>Price: ${item.price}</p>
+              <div className="quantity-controls">
+                <button onClick={() => handleQuantityChange(item.id, -1)}>-</button>
+                <span style={{ margin: '0 10px' }}>{item.quantity}</span>
+                <button onClick={() => handleQuantityChange(item.id, 1)}>+</button>
+              </div>
               <p>Total: ${item.price * item.quantity}</p>
-              <button onClick={() => handleRemoveFromCart(item.id)}>Remove</button>
             </div>
           ))}
           <h2>Total Price: ${calculateTotalPrice()}</h2>

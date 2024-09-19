@@ -1,6 +1,6 @@
 // src/redux/reducers/itemReducer.js
 
-import { SET_ITEMS, ADD_TO_CART, REMOVE_FROM_CART } from '../actions/itemActions';
+import { SET_ITEMS, ADD_TO_CART, REMOVE_FROM_CART, UPDATE_CART_QUANTITY } from '../actions/itemActions';
 
 const initialState = {
   items: [],
@@ -10,27 +10,48 @@ const initialState = {
 const itemReducer = (state = initialState, action) => {
   switch (action.type) {
     case SET_ITEMS:
-      return { ...state, items: action.payload };
-      
+      return {
+        ...state,
+        items: action.payload,
+      };
+    
     case ADD_TO_CART:
-      const { item, quantity } = action.payload;
-      const existingCartItemIndex = state.cart.findIndex(cartItem => cartItem.id === item.id);
-
-      // If item already exists in the cart, update the quantity
-      if (existingCartItemIndex >= 0) {
-        const updatedCart = state.cart.map(cartItem =>
-          cartItem.id === item.id
-            ? { ...cartItem, quantity: cartItem.quantity + quantity }
-            : cartItem
-        );
-        return { ...state, cart: updatedCart };
+      const existingItem = state.cart.find(cartItem => cartItem.id === action.payload.item.id);
+      if (existingItem) {
+        // If item is already in the cart, update the quantity
+        return {
+          ...state,
+          cart: state.cart.map(cartItem =>
+            cartItem.id === action.payload.item.id
+              ? { ...cartItem, quantity: cartItem.quantity + action.payload.quantity }
+              : cartItem
+          ),
+        };
       } else {
-        // If item does not exist in the cart, add it with the specified quantity
-        return { ...state, cart: [...state.cart, { ...item, quantity }] };
+        // Add new item to the cart
+        return {
+          ...state,
+          cart: [...state.cart, { ...action.payload.item, quantity: action.payload.quantity }],
+        };
       }
 
     case REMOVE_FROM_CART:
-      return { ...state, cart: state.cart.filter(cartItem => cartItem.id !== action.payload) };
+      return {
+        ...state,
+        cart: state.cart.filter(item => item.id !== action.payload),
+      };
+    
+    case UPDATE_CART_QUANTITY:
+      return {
+        ...state,
+        cart: state.cart
+          .map(item =>
+            item.id === action.payload.id
+              ? { ...item, quantity: action.payload.quantity }
+              : item
+          )
+          .filter(item => item.quantity > 0), // Automatically remove items with 0 quantity
+      };
 
     default:
       return state;
